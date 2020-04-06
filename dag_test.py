@@ -43,11 +43,22 @@ python_task = PythonOperator(
     python_callable=print_context,
     dag=dag)
 
+qubole_query = """SELECT
+    p.product_name AS Product
+    ,COUNT (oi.order_item_quantity) AS QuantityOrdered
+  FROM
+    ecommerce.order_items oi INNER JOIN ecommerce.products p
+      ON oi.order_item_product_id = p.product_id
+  GROUP BY
+    p.product_name
+  ORDER BY
+    QuantityOrdered DESC LIMIT 10"""
+
 qubole_task = QuboleOperator(
     task_id='qubole_task',
-    command_type='hivecmd',
-    query='show tables',
-    cluster_label='default',
+    command_type='prestocmd',
+    query=qubole_query,
+    cluster_label='presto-for-airflow',
     fetch_logs=True, # If true, will fetch qubole command logs and concatenate them into corresponding airflow task logs
     tags='aiflow_example_run',  # To attach tags to qubole command, auto attach 3 tags - dag_id, task_id, run_id
     qubole_conn_id='qubole_default',  # Connection id to submit commands inside QDS, if not set "qubole_default" is used
