@@ -1,0 +1,12 @@
+airflow:
+  cloneDagFilesFromGit:
+    enabled: true
+    repository: https://github.com/chattarajoy/airflow-dags
+    branch: master
+#  extraEnvVars:
+#    'AIRFLOW__CORE__LOAD_EXAMPLES': 'true'
+
+service:
+  type: LoadBalancer
+  port: 80
+
